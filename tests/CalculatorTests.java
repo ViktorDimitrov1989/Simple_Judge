@@ -1,0 +1,36 @@
+package tests;
+import models.Calculator;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import annotations.TestTemplate;
+
+public class CalculatorTests {
+    private Calculator calculator;
+
+    @Before
+    private void init(){
+        this.calculator = new Calculator();
+    }
+
+    @Test
+    public void testCorrectAdditionResult() {
+        Assert.assertEquals(10,this.calculator.calculate(5,5,"+"));
+    }
+
+    @Test
+    public void testForCorrectSubtractionResult(){
+        Assert.assertEquals(0,this.calculator.calculate(5,5,"-"));
+    }
+
+    @Test
+    public void testForCorrectDivideResult(){
+        Assert.assertEquals(1,this.calculator.calculate(5,5,"/"));
+    }
+
+    @Test
+    public void testForCorrectMultiplyResult(){
+        Assert.assertEquals(25,this.calculator.calculate(5,5,"*"));
+    }
+
+}

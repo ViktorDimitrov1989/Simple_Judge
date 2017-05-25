@@ -1,6 +1,9 @@
 package helpers;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class CustomClassLoader implements ClassLoader{
 
@@ -9,10 +12,39 @@ public class CustomClassLoader implements ClassLoader{
     }
 
     @Override
-    public Class<?> findClass(String name) throws IOException, ClassNotFoundException {
-        byte[] bt =  this.loadClassData(name);
+    public Class<?> loadClass(File file) throws Exception {
+        URL[] url = new URL[0];
 
-        return this.defineClass(bt);
+        try {
+            url = new URL[]{file.toURI().toURL()};
+        }catch (MalformedURLException e){
+            System.out.println(e.getMessage());
+        }
+
+        int substringLength = file.getName().indexOf(".");
+
+        if(substringLength != -1){
+            String className = this.removeExtension(file.getName());
+
+
+            URLClassLoader classLoader = new URLClassLoader(url);
+
+            Class currentClass = null;
+
+            try {
+                currentClass = classLoader.loadClass("tests." + className);
+
+                return currentClass;
+            }catch (ClassNotFoundException e){
+                System.out.println("Class " + className + " not found");
+            }
+        }
+
+        return null;
+    }
+
+    private String removeExtension(String file){
+        return file.replaceFirst("[.][^.]+$", "");
     }
 
     private Class<?> defineClass(byte[] data) throws IOException, ClassNotFoundException {

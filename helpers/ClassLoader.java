@@ -1,8 +1,10 @@
 package helpers;
 
+import java.io.File;
 import java.io.IOException;
 
 public interface ClassLoader {
 
-    Class<?> findClass(String name) throws IOException, ClassNotFoundException;
+    Class<?> loadClass(File file) throws IOException, ClassNotFoundException, Exception;
+
 }

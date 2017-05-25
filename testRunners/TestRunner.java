@@ -8,7 +8,6 @@ import io.CodeReader;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import java.io.File;
-
 public class TestRunner {
 
     /*public static void main(String[] args) throws ClassNotFoundException {

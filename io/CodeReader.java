@@ -14,17 +14,29 @@ public class CodeReader implements Reader {
     @Override
     public String read() throws IOException {
         //return this.reader.readLine();
+
         return "package models;\n" +
-                "public class MessageUtil {\n" +
-                "    private String message;\n" +
+                "import annotations.TestableMethod;\n" +
                 "\n" +
-                "    public MessageUtil(String message){\n" +
-                "        this.message = message;\n" +
+                "public class Calculator {\n" +
+                "\n" +
+                "    public Calculator(){\n" +
                 "    }\n" +
                 "\n" +
-                "    public String printMessage(){\n" +
-                "        System.out.println(message);\n" +
-                "        return message;\n" +
+                "    @TestableMethod(name = \"calculate\")\n" +
+                "    public int calculate(int operand1,int operand2, String operationSymbol){\n" +
+                "        switch (operationSymbol){\n" +
+                "            case \"+\":\n" +
+                "                return operand1 + operand2;\n" +
+                "            case \"-\":\n" +
+                "                return operand1 - operand2;\n" +
+                "            case \"*\":\n" +
+                "                return operand1 * operand2;\n" +
+                "            case \"/\":\n" +
+                "                return operand1 / operand2;\n" +
+                "            default:\n" +
+                "                return 0;\n" +
+                "        }\n" +
                 "    }\n" +
                 "\n" +
                 "}";

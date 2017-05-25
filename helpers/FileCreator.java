@@ -1,5 +1,7 @@
 package helpers;
 
+import constants.Constants;
+
 import java.io.*;
 
 public class FileCreator {
@@ -7,6 +9,7 @@ public class FileCreator {
     private static final String FILE_NOT_FOUND_ERROR_MSG = "File not found";
     private static final String IO_ERROR_MSG = "IO Error occured";
     private static final String TESTS_EXTENSION = "Tests";
+    private static final String TXT_EXTENSION = ".txt";
 
     public FileCreator() {
     }
@@ -36,7 +39,9 @@ public class FileCreator {
 
 
     public void createFile(String filePath, String fileName, String testableCode) throws IOException {
-        File file = new File(filePath, fileName + JAVA_FILE_EXTENSION);
+        String fullPath = Constants.PROJECT_PATH + Constants.SOURCE_CODE_PATH + filePath;
+
+        File file = new File(fullPath, fileName + JAVA_FILE_EXTENSION);
 
         if (!file.exists()) {
             try {
@@ -53,7 +58,7 @@ public class FileCreator {
             e.printStackTrace();
         }
 
-        String cmdPath = "./models" + "/" + fileName + JAVA_FILE_EXTENSION;
+        String cmdPath = "./models/" + fileName + JAVA_FILE_EXTENSION;
 
         this.compileJavaFile(cmdPath);
 
@@ -65,7 +70,7 @@ public class FileCreator {
         commands[0] = "cmd";
         commands[1] = "/c";
         /* Command you want to execute */
-        commands[2] = "cd C:\\Users\\Atlas\\IdeaProjects\\javacExample\\src && javac -cp .;lib/junit-4.12.jar " + className;
+        commands[2] = "cd " + Constants.PROJECT_PATH + Constants.SOURCE_CODE_PATH + " && javac -cp .;lib/junit-4.12.jar " + className;
 
         Process process = null;
 
@@ -73,7 +78,7 @@ public class FileCreator {
             /* Create process */
             process = Runtime.getRuntime().exec(commands);
             //wait for the process to end
-            process.waitFor();
+            //process.waitFor();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,9 +86,19 @@ public class FileCreator {
     }
 
     public void createTest(String fileName) throws IOException {
-        String testsText = this.readText("C:\\Users\\Atlas\\IdeaProjects\\javacExample\\src\\unitTestTemplates\\MessageUtilTests.txt");
+        String pathToText = Constants.PROJECT_PATH +
+                Constants.SOURCE_CODE_PATH +
+                Constants.UNIT_TEST_TEMPLATES_PATH
+                + fileName + TESTS_EXTENSION + TXT_EXTENSION;
 
-        this.createFile("C:\\Users\\Atlas\\IdeaProjects\\javacExample\\src\\tests", fileName + TESTS_EXTENSION, testsText);
+        String testsText = this.readText(pathToText);
+
+        String filePath = Constants.TESTS_PATH;
+
+        String file = fileName + TESTS_EXTENSION;
+
+        this.createFile(filePath,
+               file , testsText);
 
         String pathToFile = "./tests/" + fileName + TESTS_EXTENSION + JAVA_FILE_EXTENSION;
 
