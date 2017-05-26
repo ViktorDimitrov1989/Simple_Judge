@@ -1,12 +1,14 @@
 package tests;
 
 import models.PrimeNumberGenerator;
+import annotations.TestTemplate
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
+@TestTemplate
 public class PrimeNumberGeneratorTests {
     private PrimeNumberGenerator primeNumberGenerator;
 

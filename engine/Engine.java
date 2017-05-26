@@ -3,7 +3,7 @@ package engine;
 import annotations.TestTemplate;
 import constants.Constants;
 import helpers.ClassLoader;
-import helpers.CmdManipulator;
+import helpers.CustomClassLoader;
 import helpers.FileCreator;
 import io.CodeReader;
 import org.junit.runner.JUnitCore;
@@ -11,13 +11,13 @@ import org.junit.runner.Result;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class Engine implements Runnable {
-    //Run cmd queries
-    private CmdManipulator cmdManipulator;
     //Manipulate string input and create .java file from it
     private FileCreator fileCreator;
     //Handle user input
@@ -25,8 +25,7 @@ public class Engine implements Runnable {
     //Load classes
     private ClassLoader classLoader;
 
-    public Engine(CmdManipulator cmdManipulator, FileCreator fileCreator, CodeReader codeReader, ClassLoader classLoader) {
-        this.cmdManipulator = cmdManipulator;
+    public Engine(FileCreator fileCreator, CodeReader codeReader, ClassLoader classLoader) {
         this.fileCreator = fileCreator;
         this.codeReader = codeReader;
         this.classLoader = classLoader;
@@ -45,41 +44,53 @@ public class Engine implements Runnable {
         String className = this.extractFileName(codeToTest);
 
         try {
-            this.fileCreator.createFile(Constants.MODELS_PATH, className, codeToTest);
-            this.fileCreator.createTest(className);
+            File entityFile = this.fileCreator.createFile(Constants.MODELS_PATH, className, codeToTest);
+            File testsFile = this.fileCreator.createTest(className);
 
-        } catch (IOException e) {
+            Class modelClass = this.classLoader.loadClass(entityFile, "model");
+
+            String debug = "";
+
+            Class testCLass = this.classLoader.loadClass(testsFile, "test");
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
+
+        //--------------------------------------check junitTests result---------------------------------------------//
         Result result = null;
 
         String testsPath = Constants.PROJECT_PATH +
                 Constants.SOURCE_CODE_PATH +
                 Constants.TESTS_PATH;
 
-
-        //--------------------------------------check junitTests result---------------------------------------------//
         File[] testFiles = new File(testsPath).listFiles();
 
         for (File testFile : testFiles) {
-            //String name = this.removeExtension(testFile.getName());
-            Class<?> c = null;
+            if(testFile.getName().contains(".class")){
+                continue;
+            }
 
+            Class<?> c = null;
+            //TODO compile only the file which is needed and get Class with Class.forName() method
             try {
-                c = this.classLoader.loadClass(testFile);
+                c = this.classLoader.loadClass(testFile, "test");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            if (c.isAnnotationPresent(TestTemplate.class)) {//TODO
+            if (c.isAnnotationPresent(TestTemplate.class)) {
                 result = JUnitCore.runClasses(c);
+                //boolean result from tests
+                System.out.println(result.wasSuccessful());
                 break;
             }
         }
-
-        //boolean result from tests
-        System.out.println(result.wasSuccessful());
     }
 
     private String extractFileName(String codeToTest) {

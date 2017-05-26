@@ -38,7 +38,7 @@ public class FileCreator {
     }
 
 
-    public void createFile(String filePath, String fileName, String testableCode) throws IOException {
+    public File createFile(String filePath, String fileName, String testableCode) throws IOException {
         String fullPath = Constants.PROJECT_PATH + Constants.SOURCE_CODE_PATH + filePath;
 
         File file = new File(fullPath, fileName + JAVA_FILE_EXTENSION);
@@ -58,10 +58,7 @@ public class FileCreator {
             e.printStackTrace();
         }
 
-        String cmdPath = "./models/" + fileName + JAVA_FILE_EXTENSION;
-
-        this.compileJavaFile(cmdPath);
-
+        return file;
     }
 
     private void compileJavaFile(String className){
@@ -75,17 +72,14 @@ public class FileCreator {
         Process process = null;
 
         try {
-            /* Create process */
             process = Runtime.getRuntime().exec(commands);
-            //wait for the process to end
-            //process.waitFor();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void createTest(String fileName) throws IOException {
+    public File createTest(String fileName) throws IOException {
         String pathToText = Constants.PROJECT_PATH +
                 Constants.SOURCE_CODE_PATH +
                 Constants.UNIT_TEST_TEMPLATES_PATH
@@ -97,12 +91,8 @@ public class FileCreator {
 
         String file = fileName + TESTS_EXTENSION;
 
-        this.createFile(filePath,
+        return this.createFile(filePath,
                file , testsText);
-
-        String pathToFile = "./tests/" + fileName + TESTS_EXTENSION + JAVA_FILE_EXTENSION;
-
-        this.compileJavaFile(pathToFile);
     }
 
 }

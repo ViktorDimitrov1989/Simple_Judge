@@ -1,46 +1,42 @@
 package helpers;
 
+import javax.tools.*;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 
 public class CustomClassLoader implements ClassLoader{
-
+    private JavaCompiler compiler;
+    private StandardJavaFileManager fileManager;
 
     public CustomClassLoader() {
     }
 
+    private void init(){
+        this.compiler = ToolProvider.getSystemJavaCompiler();
+        this.fileManager = this.compiler.getStandardFileManager(null,null,null);
+    }
+
     @Override
-    public Class<?> loadClass(File file) throws Exception {
-        URL[] url = new URL[0];
+    public Class<?> loadClass(File file, String type) throws Exception {
+        this.init();
 
-        try {
-            url = new URL[]{file.toURI().toURL()};
-        }catch (MalformedURLException e){
-            System.out.println(e.getMessage());
+        File parentDirectory = file.getParentFile();
+
+        this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(parentDirectory));
+
+        Iterable<? extends JavaFileObject> compilationUnits = this.fileManager.getJavaFileObjectsFromFiles(Collections.singletonList(file));
+        this.compiler.getTask(null, this.fileManager, null,null,null, compilationUnits).call();
+        this.fileManager.close();
+
+        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{parentDirectory.toURI().toURL()});
+
+        if(type.equals("test")){
+            return classLoader.loadClass("tests." + file.getName().replace(".java", ""));
+        } else{
+            return classLoader.loadClass("models." + file.getName().replace(".java", ""));
         }
-
-        int substringLength = file.getName().indexOf(".");
-
-        if(substringLength != -1){
-            String className = this.removeExtension(file.getName());
-
-
-            URLClassLoader classLoader = new URLClassLoader(url);
-
-            Class currentClass = null;
-
-            try {
-                currentClass = classLoader.loadClass("tests." + className);
-
-                return currentClass;
-            }catch (ClassNotFoundException e){
-                System.out.println("Class " + className + " not found");
-            }
-        }
-
-        return null;
     }
 
     private String removeExtension(String file){
