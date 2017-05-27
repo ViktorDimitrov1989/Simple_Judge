@@ -14,7 +14,7 @@ public class FileCreator {
     public FileCreator() {
     }
 
-    private String readText(String fileName){
+    private String readText(String fileName) {
         String returnValue = "";
         FileReader file;
         String line = "";
@@ -51,7 +51,7 @@ public class FileCreator {
             }
         }
 
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()))){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()))) {
             writer.write(testableCode);
 
         } catch (IOException e) {
@@ -61,12 +61,10 @@ public class FileCreator {
         return file;
     }
 
-    private void compileJavaFile(String className){
-        /* String array to execute commands */
+    private void compileJavaFile(String className) {
         String[] commands = new String[3];
         commands[0] = "cmd";
         commands[1] = "/c";
-        /* Command you want to execute */
         commands[2] = "cd " + Constants.PROJECT_PATH + Constants.SOURCE_CODE_PATH + " && javac -cp .;lib/junit-4.12.jar " + className;
 
         Process process = null;
@@ -91,8 +89,11 @@ public class FileCreator {
 
         String file = fileName + TESTS_EXTENSION;
 
+        /*String pathToFile = "./tests/" + fileName + TESTS_EXTENSION + JAVA_FILE_EXTENSION;
+        this.compileJavaFile(pathToFile);*/
+
         return this.createFile(filePath,
-               file , testsText);
+                file, testsText);
     }
 
 }

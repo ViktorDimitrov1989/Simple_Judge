@@ -2,6 +2,7 @@ package helpers;
 
 import javax.tools.*;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -9,8 +10,10 @@ import java.util.Collections;
 public class CustomClassLoader implements ClassLoader{
     private JavaCompiler compiler;
     private StandardJavaFileManager fileManager;
+    private URLClassLoader classLoader;
 
     public CustomClassLoader() {
+        this.init();
     }
 
     private void init(){
@@ -20,8 +23,6 @@ public class CustomClassLoader implements ClassLoader{
 
     @Override
     public Class<?> loadClass(File file, String type) throws Exception {
-        this.init();
-
         File parentDirectory = file.getParentFile();
 
         this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(parentDirectory));
@@ -30,13 +31,31 @@ public class CustomClassLoader implements ClassLoader{
         this.compiler.getTask(null, this.fileManager, null,null,null, compilationUnits).call();
         this.fileManager.close();
 
-        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{parentDirectory.toURI().toURL()});
+        this.classLoader = URLClassLoader.newInstance(new URL[]{parentDirectory.toURI().toURL()});
+
+        String className = "";
 
         if(type.equals("test")){
-            return classLoader.loadClass("tests." + file.getName().replace(".java", ""));
+            className = "tests." + file.getName().replace(".java", "");
+            Class<?> result = this.classLoader.loadClass(className);
+            this.classLoader.close();
+            return result;
         } else{
-            return classLoader.loadClass("models." + file.getName().replace(".java", ""));
+            className = "models." + file.getName().replace(".java", "");
+            Class<?> result = this.classLoader.loadClass(className);
+            this.classLoader.close();
+            return result;
         }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void addPath(String s) throws Exception {
+        File f = new File(s);
+        Class urlClass = URLClassLoader.class;
+        Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+        method.setAccessible(true);
+        method.invoke(this.classLoader, new URL[]{f.toURI().toURL()});
     }
 
     private String removeExtension(String file){

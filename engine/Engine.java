@@ -3,7 +3,6 @@ package engine;
 import annotations.TestTemplate;
 import constants.Constants;
 import helpers.ClassLoader;
-import helpers.CustomClassLoader;
 import helpers.FileCreator;
 import io.CodeReader;
 import org.junit.runner.JUnitCore;
@@ -11,8 +10,6 @@ import org.junit.runner.Result;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,15 +40,18 @@ public class Engine implements Runnable {
 
         String className = this.extractFileName(codeToTest);
 
+        Class modelClass = null;
+        Class testCLass = null;
+
         try {
             File entityFile = this.fileCreator.createFile(Constants.MODELS_PATH, className, codeToTest);
             File testsFile = this.fileCreator.createTest(className);
 
-            Class modelClass = this.classLoader.loadClass(entityFile, "model");
+            modelClass = this.classLoader.loadClass(entityFile, "model");
+
+            testCLass = this.classLoader.loadClass(testsFile, "test");
 
             String debug = "";
-
-            Class testCLass = this.classLoader.loadClass(testsFile, "test");
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -70,22 +70,18 @@ public class Engine implements Runnable {
         File[] testFiles = new File(testsPath).listFiles();
 
         for (File testFile : testFiles) {
+
             if(testFile.getName().contains(".class")){
                 continue;
             }
+            //TODO compile only the file which is needed
 
-            Class<?> c = null;
-            //TODO compile only the file which is needed and get Class with Class.forName() method
-            try {
-                c = this.classLoader.loadClass(testFile, "test");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            String debug = "";
 
-            if (c.isAnnotationPresent(TestTemplate.class)) {
-                result = JUnitCore.runClasses(c);
+            if (testCLass.isAnnotationPresent(TestTemplate.class)) {
+                JUnitCore junit = new JUnitCore();
+
+                result = junit.run(testCLass);
                 //boolean result from tests
                 System.out.println(result.wasSuccessful());
                 break;
