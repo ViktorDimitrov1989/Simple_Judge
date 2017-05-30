@@ -22,7 +22,7 @@ public class CustomClassLoader implements ClassLoader{
     }
 
     @Override
-    public Class<?> loadClass(File file, String type) throws Exception {
+    public synchronized Class<?> loadClass(File file, String type) throws Exception {
         File parentDirectory = file.getParentFile();
 
         this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(parentDirectory));

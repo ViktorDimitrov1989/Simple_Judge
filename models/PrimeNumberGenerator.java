@@ -6,6 +6,7 @@ import java.util.List;
 public class PrimeNumberGenerator {
 
     public PrimeNumberGenerator() {
+        System.out.println("prime number generator is here!");
     }
 
     public List<Integer> generatePrimeNumbers(int start, int end){

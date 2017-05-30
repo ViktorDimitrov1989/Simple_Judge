@@ -13,6 +13,7 @@ import java.util.List;
 @TestTemplate
 public class PrimeNumberGeneratorTests {
     private Object primeNumberGenerator;
+    private Method generatePrimesMethod;
 
     @Before
     public void init() throws ClassNotFoundException, NoSuchMethodException,
@@ -22,16 +23,25 @@ public class PrimeNumberGeneratorTests {
         constructor.setAccessible(true);
         this.primeNumberGenerator = cl.getConstructor().newInstance();
 
+        this.generatePrimesMethod = this.primeNumberGenerator.getClass().getMethod("generatePrimeNumbers", int.class, int.class);
+        this.generatePrimesMethod.setAccessible(true);
+
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void resultListMustBeExactLength() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method generatePrimes = this.primeNumberGenerator.getClass().getMethod("generatePrimeNumbers", int.class, int.class);
-        generatePrimes.setAccessible(true);
+    public void correctFirstNumber() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<Integer> res = (List<Integer>) this.generatePrimesMethod.invoke(this.primeNumberGenerator, 2,100);
+        Assert.assertTrue(2 == res.get(0));
+    }
 
-        List<Integer> res = (List<Integer>) generatePrimes.invoke(this.primeNumberGenerator, 2,100);
-        Assert.assertEquals(25, res.size());
+    @Test
+    @SuppressWarnings("unchecked")
+    public void correctLastNumber() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<Integer> res = (List<Integer>) this.generatePrimesMethod.invoke(this.primeNumberGenerator, 2,100);
+        int lastIndex = res.size() - 1;
+
+        Assert.assertTrue(97 == res.get(lastIndex));
     }
 
 }

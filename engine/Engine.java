@@ -45,20 +45,20 @@ public class Engine implements Runnable {
 
         try {
             File entityFile = this.fileCreator.createFile(Constants.MODELS_PATH, className, codeToTest);
+
             File testsFile = this.fileCreator.createTest(className);
 
             modelClass = this.classLoader.loadClass(entityFile, "model");
 
             testCLass = this.classLoader.loadClass(testsFile, "test");
 
-            String debug = "";
+
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         //--------------------------------------check junitTests result---------------------------------------------//
         Result result = null;
@@ -69,6 +69,8 @@ public class Engine implements Runnable {
 
         File[] testFiles = new File(testsPath).listFiles();
 
+        String debug = "";
+
         for (File testFile : testFiles) {
 
             if(testFile.getName().contains(".class")){
@@ -76,13 +78,13 @@ public class Engine implements Runnable {
             }
             //TODO compile only the file which is needed
 
-            String debug = "";
-
             if (testCLass.isAnnotationPresent(TestTemplate.class)) {
                 JUnitCore junit = new JUnitCore();
 
                 result = junit.run(testCLass);
                 //boolean result from tests
+                System.out.println("Run count: "  + result.getRunCount());
+                System.out.println("Failure count: "  + result.getFailureCount());
                 System.out.println(result.wasSuccessful());
                 break;
             }

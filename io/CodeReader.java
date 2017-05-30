@@ -16,30 +16,38 @@ public class CodeReader implements Reader {
         //return this.reader.readLine();
 
         return "package models;\n" +
-                "import annotations.TestableMethod;\n" +
                 "\n" +
-                "public class Calculator {\n" +
+                "import java.util.ArrayList;\n" +
+                "import java.util.List;\n" +
                 "\n" +
-                "    public Calculator(){\n" +
+                "public class PrimeNumberGenerator {\n" +
+                "\n" +
+                "    public PrimeNumberGenerator() {\n" +
+                "        System.out.println(\"prime number generator is here!\");\n" +
                 "    }\n" +
                 "\n" +
-                "    @TestableMethod(name = \"calculate\")\n" +
-                "    public int calculate(int operand1,int operand2, String operationSymbol){\n" +
-                "        switch (operationSymbol){\n" +
-                "            case \"+\":\n" +
-                "                return operand1 + operand2;\n" +
-                "            case \"-\":\n" +
-                "                return operand1 - operand2;\n" +
-                "            case \"*\":\n" +
-                "                return operand1 * operand2;\n" +
-                "            case \"/\":\n" +
-                "                return operand1 / operand2;\n" +
-                "            default:\n" +
-                "                return 0;\n" +
+                "    public List<Integer> generatePrimeNumbers(int start, int end){\n" +
+                "        List<Integer> primes = new ArrayList<>();\n" +
+                "\n" +
+                "        for (int i = start; i < end; i++) {\n" +
+                "            boolean isPrimeNumber = true;\n" +
+                "\n" +
+                "            for (int j = 2; j < i; j++) {\n" +
+                "                if (i % j == 0) {\n" +
+                "                    isPrimeNumber = false;\n" +
+                "                    break;\n" +
+                "                }\n" +
+                "            }\n" +
+                "\n" +
+                "            if (isPrimeNumber) {\n" +
+                "                primes.add(i);\n" +
+                "            }\n" +
                 "        }\n" +
+                "\n" +
+                "        return primes;\n" +
                 "    }\n" +
                 "\n" +
-                "}";
+                "}\n";
     }
 
 
